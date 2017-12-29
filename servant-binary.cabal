@@ -1,0 +1,29 @@
+name:                servant-binary
+version:             0.0.0.0
+synopsis:            Servant content-type for binary
+-- description:
+homepage:            https://github.com/plow-technologies/servant-binary#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Kevin Cotrone
+maintainer:          kevincotrone@gmail.com
+copyright:           2017 Kevin Cotrone
+category:            Web
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Servant.Binary
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                     , binary
+                     , servant >=0.7 && <0.12
+                     , http-media
+                     , bytestring
+                     , zlib
+
+source-repository head
+  type:     git
+  location: https://github.com/plow-technologies/servant-binary
