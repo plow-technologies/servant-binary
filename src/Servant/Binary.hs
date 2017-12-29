@@ -18,11 +18,11 @@ import           Data.ByteString.Lazy (ByteString)
 import           Data.Typeable        (Typeable)
 import           Data.List.NonEmpty   (NonEmpty(..))
 import           Data.Maybe           (maybeToList)
-import           Data.Binary (Binary)
-import qualified Data.Binary as Binary
+import           Data.Binary          (Binary)
+import qualified Data.Binary          as Binary
 import qualified Codec.Compression.GZip as GZip
 
-data Binary' (binaryCompression)
+data Bin binaryCompression
   deriving (Typeable)
 
 class BinaryCompressionEncoding binaryCompression where
@@ -44,14 +44,14 @@ instance BinaryCompressionEncoding GZip where
   compress _ = GZip.compress
   decompress _ = GZip.decompress
 
-instance (BinaryCompressionEncoding binaryCompression) => Accept (Binary' binaryCompression) where
+instance (BinaryCompressionEncoding binaryCompression) => Accept (Bin binaryCompression) where
   contentTypes _ =
     "application" M.// "vnd.hsbin"
       :| (maybeToList $ compressionContentType compressionTypeProxy)
     where
       compressionTypeProxy = Proxy :: Proxy binaryCompression
 
-instance (Binary a, BinaryCompressionEncoding binaryCompression) => MimeUnrender (Binary' binaryCompression) a where
+instance (Binary a, BinaryCompressionEncoding binaryCompression) => MimeUnrender (Bin binaryCompression) a where
   mimeUnrender _ bs =
     case Binary.decodeOrFail $ decompress compressionTypeProxy bs of
       Left (_, _, err) -> Left $ "Error decoding binary thing: " ++ err
@@ -59,7 +59,7 @@ instance (Binary a, BinaryCompressionEncoding binaryCompression) => MimeUnrender
     where
       compressionTypeProxy = Proxy :: Proxy binaryCompression
 
-instance (Binary a, BinaryCompressionEncoding binaryCompression) => MimeRender (Binary' binaryCompression) a where
+instance (Binary a, BinaryCompressionEncoding binaryCompression) => MimeRender (Bin binaryCompression) a where
   mimeRender _ val =
     compress compressionTypeProxy $ Binary.encode val
     where
