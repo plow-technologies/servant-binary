@@ -28,7 +28,6 @@ instance Binary Foo where
     num <- get
     return $ Foo name num
 
-
 type API = "post" :> ReqBody '[Bin GZip] [Foo] :> Post '[Bin GZip] [Foo]
       :<|> "post" :> "compress" :> ReqBody '[Bin NoCompression] [Foo] :> Post '[Bin GZip] [Foo]
       :<|> "binary" :> "gz" :> Get '[Bin GZip] [Foo]
@@ -38,16 +37,17 @@ api :: Proxy API
 api = Proxy
 
 server :: Server API
-server = pure :<|> pure [Foo "GZipped!" 42] :<|> pure [Foo "Not compressed" 7]
+server =
+  pure :<|> pure :<|> pure [Foo "GZipped!" 42] :<|> pure [Foo "Not compressed" 7]
 
 app :: Application
 app = serve api server
 
 main :: IO ()
 main = do
-    args <- getArgs
-    case args of
-        ("run":_) -> do
-            port <- fromMaybe 8000 . (>>= readMaybe) <$> lookupEnv "PORT"
-            Warp.run port app
-        _ -> putStrLn "To run, pass run argument"
+  args <- getArgs
+  case args of
+      ("run":_) -> do
+          port <- fromMaybe 8000 . (>>= readMaybe) <$> lookupEnv "PORT"
+          Warp.run port app
+      _ -> putStrLn "To run, pass run argument"
