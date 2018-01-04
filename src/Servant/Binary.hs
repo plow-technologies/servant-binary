@@ -26,28 +26,27 @@ data Bin binaryCompression
   deriving (Typeable)
 
 class BinaryCompressionEncoding binaryCompression where
-  compressionContentType :: Proxy binaryCompression -> Maybe M.MediaType
+  compressionContentType :: Proxy binaryCompression -> M.MediaType
   compress :: Proxy binaryCompression -> ByteString -> ByteString
   decompress :: Proxy binaryCompression -> ByteString -> ByteString
 
 data NoCompression
 
 instance BinaryCompressionEncoding NoCompression where
-  compressionContentType _ = Nothing
+  compressionContentType _ = "application" M.// "vnd.hsbin"
   compress _ = id
   decompress _ = id
 
 data GZip
 
 instance BinaryCompressionEncoding GZip where
-  compressionContentType _ = Just $ "content-coding" M.// "gzip"
+  compressionContentType _ = "application" M.// "vnd.hsbin.gz"
   compress _ = GZip.compress
   decompress _ = GZip.decompress
 
 instance (BinaryCompressionEncoding binaryCompression) => Accept (Bin binaryCompression) where
-  contentTypes _ =
-    "application" M.// "vnd.hsbin"
-      :| (maybeToList $ compressionContentType compressionTypeProxy)
+  contentType _ =
+    compressionContentType compressionTypeProxy
     where
       compressionTypeProxy = Proxy :: Proxy binaryCompression
 
