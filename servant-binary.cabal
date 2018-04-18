@@ -19,7 +19,7 @@ library
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
                      , binary
-                     , servant >=0.7 && <0.12
+                     , servant >=0.7 && <0.14
                      , http-media
                      , bytestring
                      , zlib
