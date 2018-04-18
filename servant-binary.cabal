@@ -1,5 +1,5 @@
 name:                servant-binary
-version:             0.0.0.0
+version:             0.1.0.0
 synopsis:            Servant content-type for binary
 -- description:
 homepage:            https://github.com/plow-technologies/servant-binary#readme
